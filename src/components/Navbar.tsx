@@ -4,6 +4,7 @@ const links = [
   { href: '/', label: 'Home' },
   { href: '/team', label: 'Team' },
   { href: '/login', label: 'Login' },
+  { href: '/admin', label: 'Admin', adminOnly: true },
 ];
 
 export function Navbar() {
