@@ -1,0 +1,25 @@
+{
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "outputDirectory": ".next",
+  "env": [
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_URL",
+      "value": "https://ocyhnzyzahwlkxmngngy.supabase.co"
+    },
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+      "value": "sb_publishable_58AEN-aTnoJiU0FguWy08w_MaZapItE"
+    },
+    {
+      "key": "NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME",
+      "value": "f80rob8p"
+    },
+    {
+      "key": "NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET",
+      "value": "dekutrugby"
+    }
+  ]
+}
