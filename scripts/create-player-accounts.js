@@ -1,6 +1,11 @@
-const fetch = global.fetch;
+const fs = require('fs');
+const path = require('path');
+const fetch = global.fetch || require('node-fetch');
+
 const projectUrl = process.env.SUPABASE_URL || 'https://ocyhnzyzahwlkxmngngy.supabase.co';
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE;
+const anonKey = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_PUBLIC_ANON_KEY;
+const loginFilePath = path.resolve(__dirname, '../player-logins.json');
 
 if (!serviceRoleKey) {
   console.error('Missing SUPABASE_SERVICE_ROLE_KEY environment variable.');
@@ -24,8 +29,9 @@ const headers = {
 };
 
 function makePassword(username) {
+  const safeUsername = username.replace(/[^a-z0-9]/gi, '');
   const suffix = Math.floor(1000 + Math.random() * 9000);
-  return `Dmrugby!${suffix}`;
+  return `Dmrugby!${safeUsername}${suffix}`;
 }
 
 async function getUserByEmail(email) {
@@ -48,7 +54,7 @@ async function createAuthUser(email, password) {
     body: JSON.stringify({ email, password, email_confirm: true })
   });
   const data = await response.json();
-  return { status: response.status, data };
+  return { status: response.status, ok: response.ok, data };
 }
 
 async function upsertProfile(profile) {
@@ -64,17 +70,53 @@ async function upsertProfile(profile) {
   return { ok: response.ok, status: response.status, data };
 }
 
+async function fetchPublicRows(table, select = '*') {
+  if (!anonKey) {
+    throw new Error('SUPABASE_ANON_KEY is required for public verification.');
+  }
+
+  const response = await fetch(`${projectUrl}/rest/v1/${table}?select=${encodeURIComponent(select)}`, {
+    method: 'GET',
+    headers: {
+      apikey: anonKey,
+      Authorization: `Bearer ${anonKey}`
+    }
+  });
+
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(`Failed to query ${table}: ${response.status} ${body}`);
+  }
+
+  return response.json();
+}
+
+function saveLoginFile(entries) {
+  const payload = entries.map((entry) => ({
+    username: entry.username,
+    email: entry.email,
+    password: entry.password,
+    status: entry.status,
+    profileSaved: entry.profileSaved
+  }));
+  fs.writeFileSync(loginFilePath, JSON.stringify(payload, null, 2), 'utf8');
+  console.log(`Saved player login list to ${loginFilePath}`);
+}
+
 (async () => {
+  console.log('Creating or verifying player auth accounts...');
   const results = [];
 
   for (const player of players) {
     const email = `${player.username}@dedanrugby.club`;
     const password = makePassword(player.username);
     let user = null;
-    let action = 'created';
+    let status = 'created';
+    let profileSaved = false;
+    let errorMessage = null;
 
     const authResult = await createAuthUser(email, password);
-    if (authResult.status === 200 || authResult.status === 201) {
+    if (authResult.ok) {
       user = authResult.data;
     } else {
       const message = JSON.stringify(authResult.data);
@@ -82,15 +124,19 @@ async function upsertProfile(profile) {
         const existing = await getUserByEmail(email);
         if (existing) {
           user = existing;
-          action = 'exists';
+          status = 'exists';
         } else {
-          results.push({ username: player.username, email, error: 'Existing account detected but could not fetch user.' });
-          continue;
+          errorMessage = 'Existing account detected but could not fetch user.';
         }
       } else {
-        results.push({ username: player.username, email, error: `Auth create failed: ${message}` });
-        continue;
+        errorMessage = `Auth create failed: ${message}`;
       }
+    }
+
+    if (!user) {
+      results.push({ username: player.username, email, status: 'failed', error: errorMessage });
+      console.warn(`Player ${player.username} skipped: ${errorMessage}`);
+      continue;
     }
 
     const profilePayload = {
@@ -103,13 +149,56 @@ async function upsertProfile(profile) {
     };
 
     const profileResult = await upsertProfile(profilePayload);
-    if (!profileResult.ok) {
-      results.push({ username: player.username, email, action, error: `Profile save failed: ${JSON.stringify(profileResult.data)}` });
-      continue;
+    if (profileResult.ok) {
+      profileSaved = true;
+    } else {
+      errorMessage = `Profile save failed: ${JSON.stringify(profileResult.data)}`;
+      console.warn(`Profile save failed for ${player.username}: ${errorMessage}`);
     }
 
-    results.push({ username: player.username, email, password, action, profile: profileResult.data });
+    results.push({
+      username: player.username,
+      email,
+      password,
+      status,
+      profileSaved,
+      error: errorMessage
+    });
   }
 
-  console.log(JSON.stringify(results, null, 2));
+  saveLoginFile(results);
+  console.log('
+Player login summary:');
+  results.forEach((item) => {
+    console.log(`- ${item.username}: ${item.status}${item.error ? ` (${item.error})` : ''}`);
+  });
+
+  if (anonKey) {
+    console.log('\nVerifying Supabase public tables...');
+    try {
+      const profiles = await fetchPublicRows('profiles');
+      const matches = await fetchPublicRows('matches');
+      console.log(`profiles rows: ${Array.isArray(profiles) ? profiles.length : 0}`);
+      console.log(`matches rows: ${Array.isArray(matches) ? matches.length : 0}`);
+
+      const profileNames = Array.isArray(profiles) ? profiles.map((row) => row.full_name || row.user_id) : [];
+      const existingPlayers = players.filter((player) => profileNames.includes(player.full_name));
+      console.log(`profiles matching expected players: ${existingPlayers.length}/${players.length}`);
+
+      const nyeriMatches = Array.isArray(matches)
+        ? matches.filter((row) => typeof row.opponent === 'string' && row.opponent.toLowerCase().includes('nyeri'))
+        : [];
+      console.log(`Nyeri-related matches found: ${nyeriMatches.length}`);
+      if (nyeriMatches.length) {
+        nyeriMatches.forEach((match) => {
+          console.log(`  • ${match.opponent} on ${match.date || 'unknown date'} status=${match.status}`);
+        });
+      }
+    } catch (verifyError) {
+      console.error('Verification failed:', verifyError.message || verifyError);
+    }
+  } else {
+    console.log('\nSkipping public verification because SUPABASE_ANON_KEY is not set.');
+  }
 })();
+
