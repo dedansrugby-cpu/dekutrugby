@@ -70,20 +70,20 @@ CREATE POLICY "Anyone can view matches"
 -- Create admin helper - in Supabase, add these users to admin role
 -- Admin check: (SELECT auth.jwt()->>'email' IN ('dedansrugby@gmail.com', 'admin@example.com'))
 
--- Only admin can create matches
-CREATE POLICY "Only admin can create matches"
+-- Allow authenticated users to create matches
+CREATE POLICY "Authenticated users can create matches"
   ON public.matches FOR INSERT
-  WITH CHECK (false);
+  WITH CHECK (auth.role() = 'authenticated');
 
--- Only admin can update matches
-CREATE POLICY "Only admin can update matches"
+-- Allow authenticated users to update matches
+CREATE POLICY "Authenticated users can update matches"
   ON public.matches FOR UPDATE
-  USING (false);
+  USING (auth.role() = 'authenticated');
 
--- Only admin can delete matches
-CREATE POLICY "Only admin can delete matches"
+-- Allow authenticated users to delete matches
+CREATE POLICY "Authenticated users can delete matches"
   ON public.matches FOR DELETE
-  USING (false);
+  USING (auth.role() = 'authenticated');
 
 -- ============================================
 -- CREATE INDEXES

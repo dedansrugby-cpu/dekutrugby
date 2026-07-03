@@ -28,20 +28,26 @@
             <h1>Manage match day updates</h1>
             <p>Create a fixture and instantly store it in the browser for the static site.</p>
             <form id="matchForm" class="admin-form">
-              <input type="text" name="opponent" placeholder="Opponent" required />
-              <input type="date" name="date" required />
-              <input type="text" name="venue" placeholder="Venue" value="Dedan Kimathi Grounds" />
-              <select name="format">
+              <label for="opponent">Opponent</label>
+              <input id="opponent" type="text" name="opponent" placeholder="Opponent" required />
+              <label for="fixtureDate">Fixture date</label>
+              <input id="fixtureDate" type="date" name="date" required />
+              <label for="venue">Venue</label>
+              <input id="venue" type="text" name="venue" placeholder="Venue" value="Dedan Kimathi Grounds" />
+              <label for="format">Format</label>
+              <select id="format" name="format">
                 <option value="15s">15s</option>
                 <option value="10s">10s</option>
                 <option value="7s">7s</option>
               </select>
-              <select name="status">
+              <label for="status">Status</label>
+              <select id="status" name="status">
                 <option value="scheduled">Scheduled</option>
                 <option value="live">Live</option>
                 <option value="completed">Completed</option>
               </select>
-              <textarea name="notes" placeholder="Notes"></textarea>
+              <label for="notes">Notes</label>
+              <textarea id="notes" name="notes" placeholder="Notes"></textarea>
               <button type="submit" class="btn btn-primary">Save match</button>
             </form>
             <p id="adminMessage" class="message"></p>

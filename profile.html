@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile | Dedan Marshalls Rugby</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-bar">
+        <a href="index.html" class="brand">DEDAN MARSHALLS</a>
+        <button class="nav-toggle" aria-label="Open menu">☰</button>
+        <nav class="nav-links" aria-label="Primary navigation">
+          <a href="index.html">Home</a>
+          <a href="team.html">Team</a>
+          <a href="fixtures.html">Fixtures</a>
+          <a href="login.html">Login</a>
+          <a href="profile.html" class="active">Profile</a>
+          <a href="admin.html">Admin</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="page-hero">
+        <div class="container profile-grid">
+          <div class="profile-card">
+            <p class="eyebrow">Player profile</p>
+            <h1>Complete your club profile</h1>
+            <p>Upload a passport photo, enter your details, and your short name will be ready for team selection.</p>
+            <div class="upload-card">
+              <button id="uploadPhoto" class="btn btn-secondary">Upload profile photo</button>
+              <p id="uploadMessage" class="message"></p>
+              <img id="profilePhotoPreview" class="player-photo hidden-photo" alt="Profile preview" />
+            </div>
+            <form id="profileForm" class="admin-form">
+              <input type="text" name="fullName" placeholder="Full name" required />
+              <input type="text" name="nickname" placeholder="Nickname" />
+              <input type="email" name="email" placeholder="Email" required />
+              <input type="tel" name="phone" placeholder="Phone number" required />
+              <input type="number" name="jerseyNumber" placeholder="Jersey number" required />
+              <input type="text" name="position" placeholder="Position" />
+              <textarea name="notes" placeholder="Short bio or remarks"></textarea>
+              <button type="submit" class="btn btn-primary">Save profile</button>
+            </form>
+            <p id="profileMessage" class="message"></p>
+          </div>
+          <div class="profile-card">
+            <p class="eyebrow">Role access</p>
+            <h3>Who can do what</h3>
+            <ul class="feature-list">
+              <li><strong>Admin</strong> — highest authority, manages all accounts and controls match updates.</li>
+              <li><strong>Coach</strong> — updates live scores, cards, substitutions, and team selection.</li>
+              <li><strong>Team Manager</strong> — manages accounts, edits fixtures, and can assist with score updates.</li>
+              <li><strong>Captain</strong> — helps with team selection and match coordination.</li>
+              <li><strong>Players</strong> — register profiles and upload passport photos.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-row">
+        <p>© <span id="year"></span> Dedan Marshalls Rugby Club</p>
+        <p>Built with HTML, CSS, and JavaScript</p>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://upload-widget.cloudinary.com/latest.js" type="text/javascript"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login | Dedan Marshalls Rugby</title>
+    <title>Fixtures | Dedan Marshalls Rugby</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -14,7 +14,9 @@
         <nav class="nav-links" aria-label="Primary navigation">
           <a href="index.html">Home</a>
           <a href="team.html">Team</a>
-          <a href="login.html" class="active">Login</a>
+          <a href="fixtures.html" class="active">Fixtures</a>
+          <a href="login.html">Login</a>
+          <a href="profile.html">Profile</a>
           <a href="admin.html">Admin</a>
         </nav>
       </div>
@@ -22,17 +24,19 @@
 
     <main>
       <section class="page-hero">
-        <div class="container auth-card">
-          <p class="eyebrow">Player portal</p>
-          <h1>Sign in to the club portal</h1>
-          <p>Players sign in with username and password only. Admin signs in with the Supabase owner email.</p>
-          <form id="loginForm" class="login-form">
-            <input type="text" id="email" placeholder="Username or admin email" required />
-            <input type="password" id="password" placeholder="Password" required />
-            <button type="submit" class="btn btn-primary">Sign in</button>
-          </form>
-          <p id="loginMessage" class="message"></p>
-          <p class="result-meta">Player credentials are available through the club roster accounts listed in the team portal.</p>
+        <div class="container">
+          <p class="eyebrow">Fixtures</p>
+          <h1>Real-match pitch layout</h1>
+          <p>Fixtures are shown in a rugby-pitch style layout so supporters can see the schedule clearly.</p>
+        </div>
+      </section>
+
+      <section class="container">
+        <div class="pitch-shell">
+          <div class="pitch-field">
+            <div class="pitch-lines"></div>
+            <div id="fixturePitch" class="fixture-pitch-grid"></div>
+          </div>
         </div>
       </section>
     </main>
