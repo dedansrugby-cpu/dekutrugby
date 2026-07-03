@@ -22,6 +22,16 @@ const players = [
   { full_name: 'Njeri Mugo', username: 'njeri.mugo', position: 'Fullback', jersey_number: 15, bio: 'Safe under the high ball.' }
 ];
 
+const NYERI_MATCH = {
+  opponent: 'Nyeri National Polytechnic',
+  venue: 'Nyeri National Polytechnic Grounds',
+  format: '15s',
+  status: 'scheduled',
+  result: 'pending'
+};
+
+const NYERI_LINEUP = players.map((player) => player.full_name);
+
 const headers = {
   apikey: serviceRoleKey,
   Authorization: `Bearer ${serviceRoleKey}`,
@@ -34,6 +44,17 @@ function makePassword(username) {
   return `Dmrugby!${safeUsername}${suffix}`;
 }
 
+async function parseJsonResponse(response) {
+  const text = await response.text();
+  if (!text) return null;
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    console.warn('Non-JSON response body:', text.slice(0, 200));
+    return null;
+  }
+}
+
 async function getUserByEmail(email) {
   const response = await fetch(`${projectUrl}/auth/v1/admin/users?email=${encodeURIComponent(email)}`, {
     method: 'GET',
@@ -42,7 +63,7 @@ async function getUserByEmail(email) {
   if (!response.ok) {
     return null;
   }
-  const data = await response.json();
+  const data = await parseJsonResponse(response);
   if (Array.isArray(data)) return data[0] || null;
   return data;
 }
@@ -53,20 +74,20 @@ async function createAuthUser(email, password) {
     headers,
     body: JSON.stringify({ email, password, email_confirm: true })
   });
-  const data = await response.json();
+  const data = await parseJsonResponse(response);
   return { status: response.status, ok: response.ok, data };
 }
 
 async function upsertProfile(profile) {
-  const response = await fetch(`${projectUrl}/rest/v1/profiles`, {
+  const response = await fetch(`${projectUrl}/rest/v1/profiles?on_conflict=user_id`, {
     method: 'POST',
     headers: {
       ...headers,
-      Prefer: 'resolution=merge-duplicates'
+      Prefer: 'return=representation, resolution=merge-duplicates'
     },
     body: JSON.stringify(profile)
   });
-  const data = await response.json();
+  const data = await parseJsonResponse(response);
   return { ok: response.ok, status: response.status, data };
 }
 
@@ -120,7 +141,7 @@ function saveLoginFile(entries) {
       user = authResult.data;
     } else {
       const message = JSON.stringify(authResult.data);
-      if (message.toLowerCase().includes('already exists') || authResult.status === 409) {
+      if (message.toLowerCase().includes('already exists') || authResult.status === 409 || message.toLowerCase().includes('email_exists')) {
         const existing = await getUserByEmail(email);
         if (existing) {
           user = existing;
@@ -134,7 +155,7 @@ function saveLoginFile(entries) {
     }
 
     if (!user) {
-      results.push({ username: player.username, email, status: 'failed', error: errorMessage });
+      results.push({ username: player.username, email, password, status: 'failed', profileSaved, error: errorMessage });
       console.warn(`Player ${player.username} skipped: ${errorMessage}`);
       continue;
     }
@@ -167,8 +188,7 @@ function saveLoginFile(entries) {
   }
 
   saveLoginFile(results);
-  console.log('
-Player login summary:');
+  console.log('\nPlayer login summary:');
   results.forEach((item) => {
     console.log(`- ${item.username}: ${item.status}${item.error ? ` (${item.error})` : ''}`);
   });
@@ -193,6 +213,29 @@ Player login summary:');
         nyeriMatches.forEach((match) => {
           console.log(`  • ${match.opponent} on ${match.date || 'unknown date'} status=${match.status}`);
         });
+      } else {
+        console.log('No Nyeri match found, inserting seeded Nyeri match...');
+        try {
+          const seedResponse = await fetch(`${projectUrl}/rest/v1/matches`, {
+            method: 'POST',
+            headers: {
+              ...headers,
+              Prefer: 'return=representation'
+            },
+            body: JSON.stringify({
+              ...NYERI_MATCH,
+              date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+              lineup: NYERI_LINEUP
+            })
+          });
+          const seedData = await parseJsonResponse(seedResponse);
+          if (!seedResponse.ok) {
+            throw new Error(`Seed failed: ${seedResponse.status} ${JSON.stringify(seedData)}`);
+          }
+          console.log('Nyeri match inserted:', JSON.stringify(seedData, null, 2));
+        } catch (seedError) {
+          console.error('Failed to seed Nyeri match:', seedError.message || seedError);
+        }
       }
     } catch (verifyError) {
       console.error('Verification failed:', verifyError.message || verifyError);
