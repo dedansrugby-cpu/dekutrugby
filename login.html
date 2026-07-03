@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | Dedan Marshalls Rugby</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-bar">
+        <a href="index.html" class="brand">DEDAN MARSHALLS</a>
+        <button class="nav-toggle" aria-label="Open menu">☰</button>
+        <nav class="nav-links" aria-label="Primary navigation">
+          <a href="index.html">Home</a>
+          <a href="team.html">Team</a>
+          <a href="login.html" class="active">Login</a>
+          <a href="admin.html">Admin</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="page-hero">
+        <div class="container auth-card">
+          <p class="eyebrow">Player portal</p>
+          <h1>Sign in to the club portal</h1>
+          <p>Use your real club credentials or the demo admin/player accounts below.</p>
+          <form id="loginForm" class="login-form">
+            <input type="email" id="email" placeholder="Email" required />
+            <input type="password" id="password" placeholder="Password" required />
+            <button type="submit" class="btn btn-primary">Sign in</button>
+          </form>
+          <p id="loginMessage" class="message"></p>
+          <p class="result-meta">Demo accounts: admin@dedan.com / dedan2026, player@dedan.com / player2026</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-row">
+        <p>© <span id="year"></span> Dedan Marshalls Rugby Club</p>
+        <p>Built with HTML, CSS, and JavaScript</p>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin | Dedan Marshalls Rugby</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-bar">
+        <a href="index.html" class="brand">DEDAN MARSHALLS</a>
+        <button class="nav-toggle" aria-label="Open menu">☰</button>
+        <nav class="nav-links" aria-label="Primary navigation">
+          <a href="index.html">Home</a>
+          <a href="team.html">Team</a>
+          <a href="login.html">Login</a>
+          <a href="admin.html" class="active">Admin</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="page-hero">
+        <div class="container admin-grid">
+          <div class="card">
+            <p class="eyebrow">Admin panel</p>
+            <h1>Manage match day updates</h1>
+            <p>Create a fixture and instantly store it in the browser for the static site.</p>
+            <form id="matchForm" class="admin-form">
+              <input type="text" name="opponent" placeholder="Opponent" required />
+              <input type="date" name="date" required />
+              <input type="text" name="venue" placeholder="Venue" value="Dedan Kimathi Grounds" />
+              <select name="format">
+                <option value="15s">15s</option>
+                <option value="10s">10s</option>
+                <option value="7s">7s</option>
+              </select>
+              <select name="status">
+                <option value="scheduled">Scheduled</option>
+                <option value="live">Live</option>
+                <option value="completed">Completed</option>
+              </select>
+              <textarea name="notes" placeholder="Notes"></textarea>
+              <button type="submit" class="btn btn-primary">Save match</button>
+            </form>
+            <p id="adminMessage" class="message"></p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">Upcoming fixtures</p>
+            <div id="matchList" class="admin-list"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-row">
+        <p>© <span id="year"></span> Dedan Marshalls Rugby Club</p>
+        <p>Built with HTML, CSS, and JavaScript</p>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

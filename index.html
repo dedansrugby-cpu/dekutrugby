@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dedan Marshalls Rugby</title>
+    <meta name="description" content="A modern static website for Dedan Marshalls Rugby Club." />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-bar">
+        <a href="index.html" class="brand">DEDAN MARSHALLS</a>
+        <button class="nav-toggle" aria-label="Open menu">☰</button>
+        <nav class="nav-links" aria-label="Primary navigation">
+          <a href="index.html" class="active">Home</a>
+          <a href="team.html">Team</a>
+          <a href="login.html">Login</a>
+          <a href="admin.html">Admin</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container hero-grid">
+          <div>
+            <p class="eyebrow">Dedan Marshalls Rugby</p>
+            <h1>Unyielding strength. Relentless team spirit.</h1>
+            <p class="lead">
+              A clean, fast website for the club with match updates, roster details, and a player portal.
+            </p>
+            <div class="hero-actions">
+              <a href="team.html" class="btn btn-primary">View roster</a>
+              <a href="login.html" class="btn btn-secondary">Player login</a>
+            </div>
+          </div>
+          <div class="card">
+            <p class="eyebrow">Match day</p>
+            <h2>Next fixture</h2>
+            <p class="fixture-date">Saturday • 4:00 PM</p>
+            <p class="fixture-opponent">Dedan Marshalls vs. Eldoret Titans</p>
+            <p>Venue: Dedan Kimathi Grounds</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="results">
+        <div class="container">
+          <div class="section-title">
+            <p class="eyebrow">Latest results</p>
+            <h2>Recent form</h2>
+          </div>
+          <div class="results-list" id="resultsTicker"></div>
+        </div>
+      </section>
+
+      <section class="features">
+        <div class="container grid-2">
+          <div class="card">
+            <p class="eyebrow">Team focus</p>
+            <h3>Built for performance</h3>
+            <p>
+              This static version keeps the club experience fast, simple, and easy to host on GitHub Pages.
+            </p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">What’s included</p>
+            <ul class="feature-list">
+              <li>Responsive landing page</li>
+              <li>Roster page with player cards</li>
+              <li>Admin dashboard and login flow</li>
+              <li>Supabase and Cloudinary integration</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-row">
+        <p>© <span id="year"></span> Dedan Marshalls Rugby Club</p>
+        <p>Built with HTML, CSS, and JavaScript</p>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://upload-widget.cloudinary.com/latest.js" type="text/javascript"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
