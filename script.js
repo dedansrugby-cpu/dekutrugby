@@ -19,6 +19,16 @@ const CLOUDINARY_CLOUD = 'f80rob8p';
 const CLOUDINARY_PRESET = 'dekutrugby';
 const ADMIN_EMAIL = 'dedansrugby@gmail.com';
 const AUTH_EMAIL_DOMAIN = '@dedanrugby.club';
+const NYERI_OPPONENT = 'Nyeri National Polytechnic';
+const NYERI_VENUE = 'Nyeri National Polytechnic Grounds';
+const NYERI_LINEUP = [
+  'Brian Otieno',
+  'Moses Wanjala',
+  'Lilian Akinyi',
+  'Kevin Njoroge',
+  'Davis Kibet',
+  'Njeri Mugo'
+];
 
 const ROLE_LABELS = {
   admin: 'Admin',
@@ -318,7 +328,7 @@ async function renderFixtures() {
   }
 }
 
-function setupAdminPage() {
+async function setupAdminPage() {
   const form = document.getElementById('matchForm');
   const list = document.getElementById('matchList');
   const message = document.getElementById('adminMessage');
@@ -341,6 +351,54 @@ function setupAdminPage() {
       : '<p class="result-meta">No matches yet.</p>';
   };
 
+  async function seedNyeriMatchLineup() {
+    if (!initSupabase()) return;
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user || getCurrentRole() !== 'admin') return;
+
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(12, 0, 0, 0);
+    const matchDate = tomorrow.toISOString();
+
+    const payload = {
+      opponent: NYERI_OPPONENT,
+      date: matchDate,
+      venue: NYERI_VENUE,
+      format: '15s',
+      status: 'scheduled',
+      lineup: NYERI_LINEUP,
+      notes: 'Lineup stored in Supabase for tomorrow’s game.',
+      score_for: 0,
+      score_against: 0,
+      result: 'pending'
+    };
+
+    try {
+      const { data: existing, error: selectError } = await supabase.from('matches')
+        .select('id')
+        .eq('opponent', NYERI_OPPONENT)
+        .eq('date', matchDate)
+        .limit(1)
+        .maybeSingle();
+      if (selectError) throw selectError;
+
+      if (existing?.id) {
+        const { error: updateError } = await supabase.from('matches').update(payload).eq('id', existing.id);
+        if (updateError) throw updateError;
+        if (message) message.textContent = 'Nyeri match lineup updated in Supabase.';
+      } else {
+        const { error: insertError } = await supabase.from('matches').insert([payload]);
+        if (insertError) throw insertError;
+        if (message) message.textContent = 'Nyeri match and lineup saved in Supabase.';
+      }
+    } catch (error) {
+      console.warn('Nyeri match seed failed:', error);
+      if (message) message.textContent = 'Unable to seed Nyeri lineup in Supabase.';
+    }
+  }
+
   const loadMatches = async () => {
     if (!initSupabase()) {
       if (message) message.textContent = 'Supabase is unavailable.';
@@ -358,7 +416,9 @@ function setupAdminPage() {
     }
   };
 
-  loadMatches();
+  await seedNyeriMatchLineup();
+  await loadMatches();
+  await loadMatches();
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();

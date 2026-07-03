@@ -25,17 +25,11 @@
         <div class="container">
           <p class="eyebrow">Roster</p>
           <h1>Meet the squad</h1>
-          <p>A fast static version of the team roster with player cards and optional Supabase-backed data.</p>
+          <p>Names, positions, and squad details are shown from Supabase. Player photo upload is managed through individual profiles.</p>
         </div>
       </section>
 
       <section class="container">
-        <div class="card upload-card">
-          <h3>Upload a player photo</h3>
-          <p>Use Cloudinary to add a club photo or player headshot.</p>
-          <button id="uploadPhoto" class="btn btn-primary">Upload photo</button>
-          <p id="uploadMessage" class="message"></p>
-        </div>
         <div id="rosterGrid" class="roster-grid"></div>
       </section>
     </main>
@@ -48,7 +42,6 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://upload-widget.cloudinary.com/latest.js" type="text/javascript"></script>
     <script src="script.js"></script>
   </body>
 </html>
